@@ -1,0 +1,54 @@
+{
+  "name": "lashes-store-frontend",
+  "version": "0.0.1",
+  "description": "Galaxia Glamour Store is a platform that allows you to buy and sell products online.",
+  "productName": "Galaxia Glamour Store",
+  "author": "Juan Felipe Mosquera Lasso",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --ext .js,.vue ./",
+    "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
+    "test": "echo \"No test specified\" && exit 0",
+    "build": "quasar build -m pwa",
+    "start": "serve -s dist/pwa",
+    "dev": "quasar dev -m pwa",
+    "deploy": "vercel"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.17.0",
+    "@vercel/analytics": "^1.1.1",
+    "@vercel/speed-insights": "^1.0.12",
+    "axios": "^1.7.0",
+    "bootstrap-icons": "^1.11.3",
+    "pinia": "^2.1.7",
+    "tiny-emitter": "^2.1.0",
+    "vue": "^3.4.0",
+    "vue-draggable-next": "^2.3.0",
+    "vue-gtag-next": "^1.14.0",
+    "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@quasar/app-vite": "^1.9.0",
+    "@quasar/cli": "^2.4.1",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^8.10.0",
+    "eslint-plugin-vue": "^9.23.0",
+    "postcss": "^8.4.47",
+    "prettier": "^2.8.8",
+    "quasar": "^2.16.4",
+    "vite": "^5.4.0",
+    "workbox-build": "^7.1.1",
+    "workbox-cacheable-response": "^7.1.0",
+    "workbox-core": "^7.1.0",
+    "workbox-expiration": "^7.1.0",
+    "workbox-precaching": "^7.1.0",
+    "workbox-routing": "^7.1.0",
+    "workbox-strategies": "^7.1.0"
+  },
+  "engines": {
+    "node": ">=16",
+    "npm": ">=6.13.4",
+    "yarn": ">=1.21.1"
+  }
+}

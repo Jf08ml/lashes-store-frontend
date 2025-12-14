@@ -1,0 +1,108 @@
+.my-picture {
+    width: 40%;
+    height: auto;
+    object-fit: contain;
+    filter: grayscale(50%) sepia(25%) contrast(1.2);
+    overflow: hidden;
+}
+
+.text-shadow-long {
+    text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.clandestine-text {
+    font-family: "Courier New", Courier, monospace;
+    color: #3e454f;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #3e454f;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.clandestine-neon {
+    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px $info, 0 0 10px $info,
+        0 0 10px $info, 0 0 10px $info, 0 0 10px $info, 0 0 10px $info;
+    animation: neon-flicker 1.5s infinite alternate ease-in-out;
+    z-index: 1;
+}
+
+@keyframes neon-flicker {
+    from {
+        text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px $info, 0 0 20px $info,
+            0 0 10px $info, 0 0 10px $info, 0 0 15px $info, 0 0 25px $info;
+        color: $info;
+    }
+
+    to {
+        text-shadow: 0 0 5px $info, 0 0 10px $info, 0 0 15px $info,
+            0 0 10px $info, 0 0 10px $info, 0 0 15px $info, 0 0 20px $info,
+            0 0 75px $info;
+        color: #fff;
+    }
+}
+
+.clandestine-neon-red {
+    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px $negative , 0 0 10px $negative,
+        0 0 10px $negative , 0 0 10px $negative , 0 0 10px $negative , 0 0 10px $negative;
+    animation: neon-flicker-red 1.5s infinite alternate ease-in-out;
+    z-index: 1;
+}
+
+@keyframes neon-flicker-red {
+    from {
+        text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px $negative , 0 0 20px $negative ,
+            0 0 10px $negative , 0 0 10px $negative , 0 0 15px $negative, 0 0 25px $negative;
+        color: $negative ;
+    }
+
+    to {
+        text-shadow: 0 0 5px $negative , 0 0 10px $negative , 0 0 15px $negative ,
+            0 0 10px $negative , 0 0 10px $negative , 0 0 15px $negative , 0 0 20px $negative ,
+            0 0 75px $negative ;
+        color: #fff;
+    }
+}
+
+.description-text {
+    text-align: center;
+    max-width: 100%;
+    /* instead of width: 700px; */
+    font-size: 1rem;
+    color: #3e454f;
+    margin-bottom: 20px;
+    padding: 0 20px;
+    /* responsive padding */
+}
+
+.social-button:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s;
+}
+
+.social-icon {
+    width: 100%;
+    height: auto;
+}
+
+
+
+@media (max-width: 768px) {
+    .my-picture {
+        width: 70%;
+    }
+}
+
+@media (max-width: 450px) {
+    .my-picture {
+        width: 80%;
+    }
+
+    .clandestine-neon {
+        font-size: 1.8rem;
+    }
+
+    .description-text {
+        padding: 0 20px;
+    }
+}
