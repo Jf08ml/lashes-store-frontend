@@ -354,8 +354,6 @@ async function processOrder() {
       internalNotes: internalNotes.value.trim()
     }
 
-    console.log('Creating order with data:', orderData)
-
     // Crear la orden
     const response = await orderService.createOrder(orderData)
 

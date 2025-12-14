@@ -2,39 +2,51 @@
   <q-layout view="hHh Lpr lff">
     <q-header elevated class="header-gradient">
       <InstallBanner />
-      <q-toolbar class="q-px-md q-px-lg-xl">
+
+      <!-- Toolbar controlada para mejor layout -->
+      <q-toolbar class="toolbar q-px-sm q-px-md q-px-lg-xl" dense>
+        <!-- Botón menú -->
         <q-btn
           flat
           dense
           round
           icon="menu"
           aria-label="Menu"
-          class="q-mr-sm"
+          class="menu-btn"
           @click="toggleLeftDrawer"
         >
           <q-tooltip class="bg-primary">Menú</q-tooltip>
         </q-btn>
 
-        <q-toolbar-title class="text-weight-medium">
-          {{ fullTitle || "Galaxia Glamour Store" }}
+        <!-- Título con subtítulo debajo -->
+        <q-toolbar-title class="header-title text-weight-medium">
+          <div class="title-container">
+            <div class="brand-main">
+              {{ fullTitle || "Galaxia Glamour Store" }}
+            </div>
+            <div class="brand-sub">Distribuidora oficial</div>
+          </div>
         </q-toolbar-title>
 
-        <!-- Spacer for better layout -->
         <q-space />
 
-        <!-- Authentication buttons for non-authenticated users -->
-        <div v-if="!isAuthenticated" class="auth-buttons q-gutter-sm">
+        <!-- AUTENTICACIÓN: versión escritorio -->
+        <div
+          v-if="!isAuthenticated && !isMobile"
+          class="auth-buttons q-gutter-xs"
+        >
           <q-btn
             :size="reSize"
             outline
             rounded
             no-caps
             class="text-no-wrap login-btn"
-            label="Iniciar sesión"
             @click="redirectToLogin"
           >
-            <q-icon name="login" left />
+            <q-icon name="login" class="btn-icon" />
+            <span class="btn-label">Iniciar sesión</span>
           </q-btn>
+
           <q-btn
             :size="reSize"
             unelevated
@@ -42,15 +54,46 @@
             no-caps
             color="primary"
             class="register-btn"
-            label="Registrarse"
             @click="redirectToRegister"
           >
-            <q-icon name="person_add" left />
+            <q-icon name="person_add" class="btn-icon" />
+            <span class="btn-label">Registrarse</span>
           </q-btn>
         </div>
 
-        <!-- Shopping cart button -->
-        <q-btn flat round class="cart-btn q-mx-sm" @click="toggleCart">
+        <!-- AUTENTICACIÓN: versión móvil (muestra ambas opciones en un menú) -->
+        <div v-else-if="!isAuthenticated && isMobile" class="auth-mobile">
+          <q-btn round dense unelevated color="primary" icon="person">
+            <q-tooltip class="bg-primary">
+              Iniciar sesión o registrarse
+            </q-tooltip>
+
+            <!-- Menú con las dos opciones -->
+            <q-menu anchor="bottom right" self="top right">
+                <q-item clickable dense v-close-popup @click="redirectToLogin">
+                  <q-item-section avatar>
+                    <q-icon name="login" class="menu-auth-icon" />
+                  </q-item-section>
+                  <q-item-section>Iniciar sesión</q-item-section>
+                </q-item>
+
+                <q-item
+                  clickable
+                  dense
+                  v-close-popup
+                  @click="redirectToRegister"
+                >
+                  <q-item-section avatar>
+                    <q-icon name="person_add" class="menu-auth-icon" />
+                  </q-item-section>
+                  <q-item-section>Registrarse</q-item-section>
+                </q-item>
+            </q-menu>
+          </q-btn>
+        </div>
+
+        <!-- Carrito -->
+        <q-btn flat round class="cart-btn" @click="toggleCart">
           <q-icon name="shopping_cart" size="md" />
           <q-badge
             v-if="itemsCar > 0"
@@ -60,21 +103,28 @@
             :label="itemsCar"
             class="cart-badge"
           />
-          <q-tooltip class="bg-primary"
-            >Ver carrito ({{ itemsCar }} items)</q-tooltip
-          >
+          <q-tooltip class="bg-primary">
+            Ver carrito ({{ itemsCar }} items)
+          </q-tooltip>
         </q-btn>
 
-        <!-- User menu for authenticated users -->
+        <!-- Menú de usuario autenticado -->
         <div v-if="isAuthenticated" class="user-menu">
-          <q-btn-dropdown flat rounded no-caps class="user-dropdown">
-            <template v-slot:label>
+          <q-btn-dropdown
+            flat
+            rounded
+            no-caps
+            class="user-dropdown"
+            content-class="user-dropdown-menu"
+          >
+            <template #label>
               <q-avatar size="32px" class="q-mr-sm">
                 <img
                   src="https://ik.imagekit.io/6cx9tc1kx/galaxia/zoomed_rounded_image_dSaieoj4-.png?updatedAt=1753479123734"
                   alt="avatar-galaxia"
                 />
               </q-avatar>
+              <!-- en móvil oculto el texto, sólo avatar -->
               <span class="gt-xs">Mi cuenta</span>
             </template>
 
@@ -107,6 +157,7 @@
       </q-toolbar>
     </q-header>
 
+    <!-- Drawer lateral -->
     <q-drawer
       v-model="leftDrawerOpen"
       overlay
@@ -145,8 +196,11 @@
 
       <q-separator class="q-mt-md" />
 
-      <!-- Financial Widget for Administrators -->
-      <div v-if="isAuthenticated && authStore.userRole === 'Administrator'" class="q-pa-md">
+      <!-- Widget financiero sólo admin -->
+      <div
+        v-if="isAuthenticated && authStore.userRole === 'Administrator'"
+        class="q-pa-md"
+      >
         <FinancialWidget />
       </div>
     </q-drawer>
@@ -155,7 +209,7 @@
       <router-view />
     </q-page-container>
 
-    <!-- Cart Drawer -->
+    <!-- Drawer del carrito -->
     <CartDrawer v-model="cartDrawerOpen" />
   </q-layout>
 </template>
@@ -174,15 +228,15 @@ import { useQuasar } from "quasar";
 const $router = useRouter();
 const authStore = useAuthStore();
 const carStore = useCarStore();
-const isAuthenticated = computed(() => authStore.isAuthenticated);
 const $q = useQuasar();
 
+const isAuthenticated = computed(() => authStore.isAuthenticated);
+
+// Flag reutilizable para mobile
+const isMobile = computed(() => $q.screen.lt.sm);
+
 const reSize = computed(() => {
-  if ($q.screen.lt.sm) {
-    return "xs";
-  } else {
-    return "md";
-  }
+  return $q.screen.lt.sm ? "xs" : "md";
 });
 
 const itemsCar = computed(() => carStore.itemCount);
@@ -334,12 +388,101 @@ const fullTitle = computed(() => {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
+/* Toolbar base: permito wrap en móviles y ajusto separación */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  min-height: 52px;
+  column-gap: 4px;
+}
+
+/* Título */
+.header-title {
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  flex: 4;
+  overflow: visible;
+  max-width: none;
+}
+
+.title-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  width: 100%;
+}
+
+.brand-main {
+  font-size: 1.15rem;
+  line-height: 1.3;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.brand-sub {
+  font-size: 0.7rem;
+  opacity: 0.75;
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 /* Authentication buttons styling */
 .auth-buttons {
   display: flex;
   align-items: center;
 }
 
+.auth-mobile {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.auth-mobile .q-btn {
+  padding: 4px;
+}
+
+/* Botones de auth desktop: menos padding, todo más compacto */
+.login-btn,
+.register-btn {
+  padding: 3px 8px;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Icono dentro de los botones: más pequeño, menos margen */
+.btn-icon {
+  font-size: 14px;
+  margin-right: 4px;
+}
+
+.btn-label {
+  line-height: 1;
+}
+
+/* Íconos del menú de login/registro (dentro del q-menu) */
+.menu-auth-icon {
+  font-size: 18px;
+}
+
+/* Menú button */
+.menu-btn {
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  margin-right: 4px;
+  padding: 6px;
+}
+
+.menu-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+/* LOGIN / REGISTER desktop (estilos de borde y hover) */
 .login-btn {
   border: 2px solid rgba(255, 255, 255, 0.7);
   color: white;
@@ -371,23 +514,24 @@ const fullTitle = computed(() => {
 /* Shopping cart button */
 .cart-btn {
   position: relative;
-  padding: 8px;
-  border-radius: 50%;
+  padding: 6px;
+  border-radius: 999px;
   transition: all 0.3s ease;
   background: rgba(255, 255, 255, 0.1);
+  margin-left: 2px;
 }
 
 .cart-btn:hover {
   background: rgba(255, 255, 255, 0.2);
   color: white;
-  transform: scale(1.1);
+  transform: scale(1.05);
   box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
 }
 
 .cart-badge {
-  font-size: 10px;
-  min-width: 18px;
-  height: 18px;
+  font-size: 9px;
+  min-width: 16px;
+  height: 16px;
   background: #000000;
   border: 2px solid white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -396,8 +540,8 @@ const fullTitle = computed(() => {
 
 /* User dropdown menu */
 .user-menu .user-dropdown {
-  padding: 4px 8px;
-  border-radius: 20px;
+  padding: 2px 6px;
+  border-radius: 18px;
   transition: all 0.3s ease;
   background: rgba(255, 255, 255, 0.1);
 }
@@ -407,6 +551,11 @@ const fullTitle = computed(() => {
   color: white;
   transform: translateY(-1px);
   box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+.user-menu .q-avatar {
+  width: 28px;
+  height: 28px;
 }
 
 /* Drawer custom styling */
@@ -422,7 +571,6 @@ const fullTitle = computed(() => {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
-
 /* Link items styling */
 .link-item {
   margin: 2px 8px;
@@ -432,7 +580,11 @@ const fullTitle = computed(() => {
 }
 
 .link-item:hover {
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.1) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.05) 0%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
   transform: translateX(6px);
   border-left-color: #000000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -440,25 +592,45 @@ const fullTitle = computed(() => {
 
 /* Responsive adjustments */
 @media (max-width: 599px) {
-  .auth-buttons {
-    flex-direction: column;
-    gap: 4px;
+  .menu-btn {
+    margin-right: 4px;
+    padding: 4px;
   }
 
-  .auth-buttons .q-btn {
-    min-width: 120px;
-    font-size: 12px;
+  .cart-btn {
+    padding: 4px;
+    margin-left: 2px;
+  }
+
+  .brand-main {
+    font-size: 1rem;
+  }
+
+  .brand-sub {
+    font-size: 0.65rem;
+  }
+
+  .auth-buttons {
+    flex-direction: column;
+    gap: 3px;
+    flex-shrink: 2;
+  }
+
+  .auth-buttons .login-btn,
+  .auth-buttons .register-btn {
+    min-width: 100px;
+    font-size: 11px;
+    padding: 3px 8px;
   }
 }
 
 @media (max-width: 479px) {
-  .q-toolbar {
-    padding-left: 8px;
-    padding-right: 8px;
+  .brand-main {
+    font-size: 0.9rem;
   }
 
-  .cart-btn {
-    padding: 6px;
+  .brand-sub {
+    font-size: 0.6rem;
   }
 }
 
@@ -488,33 +660,5 @@ const fullTitle = computed(() => {
 .q-btn.loading {
   pointer-events: none;
   opacity: 0.7;
-}
-
-/* Additional color enhancements */
-.q-toolbar-title {
-  color: white;
-  font-weight: 600;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* Menu button enhancement */
-.q-btn[aria-label="Menu"] {
-  background: rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-}
-
-.q-btn[aria-label="Menu"]:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: rotate(90deg);
-}
-
-/* Tooltip styling */
-.q-tooltip {
-  background: linear-gradient(135deg, #000000 0%, #333333 100%);
-  font-size: 12px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  color: white;
 }
 </style>

@@ -1,125 +1,143 @@
 <template>
-  <div>
-    <q-list bordered class="rounded-borders full-width shadow-1">
-      <q-expansion-item
-        expand-separator
-        v-model="isExpanded"
-        class="full-width"
-        icon="bi-signpost"
-        header-class="text-pink text-body1"
-        label="Dirección de entrega"
-        :caption="viewAddress()"
-        dense
-      >
-        <q-card flat class="q-pa-xs">
-          <q-card-section>
-            <q-form
-              @submit.prevent="onSaveAddress"
-              @reset="onReset"
-              class="q-gutter-md"
-            >
-              <div>
-                <q-input
-                  class="col-12 col-md-6 full-width text-capitalize"
-                  dense
-                  filled
-                  v-model="deliveryAddress.contactName"
-                  label="Nombre de quien recibe"
-                  required
-                />
-                <q-input
-                  class="col-12 col-md-6 full-width text-normal-case"
-                  dense
-                  filled
-                  v-model="deliveryAddress.email"
-                  label="Correo eléctronico"
-                  required
-                />
-                <q-input
-                  class="col-12 col-md-6 full-width"
-                  dense
-                  filled
-                  type="number"
-                  v-model="deliveryAddress.phoneContact"
-                  label="Teléfono de contacto"
-                  required
-                  hint="Nota: El teléfono debe tener WhatsApp"
-                />
-              </div>
+  <q-card class="delivery-card">
+    <q-expansion-item
+      v-model="isExpanded"
+      class="delivery-expansion"
+      expand-separator
+    >
+      <template v-slot:header>
+        <q-item-section avatar>
+          <q-avatar color="black" text-color="white" icon="location_on" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label class="delivery-title">Dirección de entrega</q-item-label>
+          <q-item-label caption class="delivery-caption">{{ viewAddress() }}</q-item-label>
+        </q-item-section>
+      </template>
 
-              <div>
-                <q-select
-                  class="col-12 col-md-6 full-width"
-                  dense
-                  filled
-                  v-model="deliveryAddress.department"
-                  :options="filteredDepartments"
-                  option-label="name"
-                  option-value="name"
-                  label="Departamento"
-                  use-input
-                  @filter="filterDepartments"
-                  @update:model-value="updateDepartment"
-                />
-                <q-select
-                  class="col-12 col-md-6 full-width"
-                  dense
-                  filled
-                  v-model="deliveryAddress.city"
-                  :options="filteredCities"
-                  option-label="name"
-                  option-value="name"
-                  label="Ciudad"
-                  use-input
-                  @filter="filterCities"
-                  @update:model-value="updateCity"
-                />
-              </div>
+      <q-card-section class="delivery-form-section">
+        <q-form
+          @submit.prevent="onSaveAddress"
+          @reset="onReset"
+          class="delivery-form"
+        >
+          <div class="form-section">
+            <div class="section-label">
+              <q-icon name="person" size="18px" />
+              <span>Información de contacto</span>
+            </div>
+            <div class="form-grid">
+              <q-input
+                outlined
+                v-model="deliveryAddress.contactName"
+                label="Nombre completo *"
+                class="text-capitalize"
+                @update:model-value="capitalizeContactName"
+                :rules="[val => !!val || 'Campo requerido']"
+              />
+              <q-input
+                outlined
+                v-model="deliveryAddress.email"
+                label="Correo electrónico *"
+                type="email"
+                :rules="[val => !!val || 'Campo requerido']"
+              />
+              <q-input
+                outlined
+                v-model="deliveryAddress.phoneContact"
+                label="Teléfono (WhatsApp) *"
+                type="tel"
+                hint="Debe tener WhatsApp"
+                :rules="[val => !!val || 'Campo requerido']"
+              />
+            </div>
+          </div>
 
-              <div>
-                <q-input
-                  class="col-12 col-md-6 full-width text-capitalize"
-                  dense
-                  filled
-                  v-model="deliveryAddress.neighborhood"
-                  label="Barrio"
-                  required
-                />
-                <q-input
-                  class="col-12 col-md-6 full-width"
-                  dense
-                  filled
-                  v-model="deliveryAddress.address"
-                  label="Dirección de entrega"
-                  required
-                  hint="Ejemplo: Calle 5 sur # 1a - 81"
-                />
-                <q-input
-                  class="col-12 col-md-6 full-width"
-                  dense
-                  filled
-                  v-model="deliveryAddress.indications"
-                  label="Indicaciones"
-                  hint="Ejemplo: Salón de Belleza Bellas Artes"
-                />
-              </div>
+          <div class="form-section">
+            <div class="section-label">
+              <q-icon name="map" size="18px" />
+              <span>Ubicación</span>
+            </div>
+            <div class="form-grid">
+              <q-select
+                outlined
+                v-model="deliveryAddress.department"
+                :options="filteredDepartments"
+                option-label="name"
+                option-value="name"
+                label="Departamento *"
+                use-input
+                @filter="filterDepartments"
+                @update:model-value="updateDepartment"
+                :rules="[val => !!val || 'Campo requerido']"
+              />
+              <q-select
+                outlined
+                v-model="deliveryAddress.city"
+                :options="filteredCities"
+                option-label="name"
+                option-value="name"
+                label="Ciudad *"
+                use-input
+                @filter="filterCities"
+                @update:model-value="updateCity"
+                :rules="[val => !!val || 'Campo requerido']"
+              />
+              <q-input
+                outlined
+                v-model="deliveryAddress.neighborhood"
+                label="Barrio *"
+                class="text-capitalize"
+                :rules="[val => !!val || 'Campo requerido']"
+              />
+            </div>
+          </div>
 
-              <div class="flex justify-end q-gutter-sm">
-                <q-btn
-                  label="Limpiar campos"
-                  type="reset"
-                  color="black"
-                  flat
-                  class="q-ml-sm"
-                />
-                <q-btn label="Guardar" type="submit" rounded color="pink" />
-              </div>
-            </q-form>
-          </q-card-section>
-        </q-card>
-      </q-expansion-item>
-    </q-list>
-  </div>
+          <div class="form-section">
+            <div class="section-label">
+              <q-icon name="home" size="18px" />
+              <span>Dirección detallada</span>
+            </div>
+            <div class="form-grid">
+              <q-input
+                outlined
+                v-model="deliveryAddress.address"
+                label="Dirección de entrega *"
+                hint="Ejemplo: Calle 5 sur # 1a - 81"
+                :rules="[val => !!val || 'Campo requerido']"
+                class="full-width-input"
+              />
+              <q-input
+                outlined
+                v-model="deliveryAddress.indications"
+                label="Indicaciones adicionales"
+                hint="Ejemplo: Salón de Belleza Bellas Artes"
+                class="full-width-input"
+              />
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <q-btn
+              flat
+              label="Limpiar campos"
+              type="reset"
+              color="grey-8"
+              icon="refresh"
+            />
+            <q-btn
+              unelevated
+              label="Guardar dirección"
+              type="submit"
+              color="black"
+              icon-right="check"
+              class="save-btn"
+            />
+          </div>
+        </q-form>
+      </q-card-section>
+    </q-expansion-item>
+  </q-card>
 </template>
 
 <script setup>
@@ -163,6 +181,16 @@ const onSaveAddress = () => {
 const viewAddress = () =>
   deliveryAddress.value.address ||
   "Por favor, completa la dirección de entrega.";
+
+// Función para capitalizar el nombre (primera letra de cada palabra en mayúscula)
+const capitalizeContactName = (val) => {
+  if (!val) return;
+  deliveryAddress.value.contactName = val
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
 
 const onReset = () => {
   Object.keys(deliveryAddress.value).forEach((key) => {
@@ -266,3 +294,98 @@ const filterCities = (val, update) => {
 
 onMounted(fetchDepartments);
 </script>
+<style scoped>
+.delivery-card {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  background: white;
+  margin-bottom: 16px;
+}
+
+.delivery-expansion :deep(.q-item) {
+  padding: 16px 20px;
+}
+
+.delivery-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #000;
+}
+
+.delivery-caption {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+.delivery-form-section {
+  background: #fafafa;
+  padding: 20px;
+}
+
+.delivery-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.full-width-input {
+  grid-column: 1 / -1;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.save-btn {
+  min-width: 160px;
+}
+
+@media (max-width: 600px) {
+  .delivery-expansion :deep(.q-item) {
+    padding: 14px 16px;
+  }
+
+  .delivery-form-section {
+    padding: 16px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .save-btn {
+    width: 100%;
+  }
+}
+</style>

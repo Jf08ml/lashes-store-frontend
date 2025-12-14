@@ -1,3 +1,4 @@
+@use "sass:color";
 @import "./quasar.variables.scss";
 
 ::-webkit-scrollbar {
@@ -15,12 +16,12 @@
     border-radius: 5px;
 
     &:hover {
-        background: darken($primary, 10%);
+        background: color.adjust($primary, $lightness: -10%);
     }
 }
 
 ::-webkit-scrollbar-thumb:active {
-    background: darken($primary, 20%);
+    background: color.adjust($primary, $lightness: -20%);
 }
 
 ::-webkit-scrollbar-corner {
