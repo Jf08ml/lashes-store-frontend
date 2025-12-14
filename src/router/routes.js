@@ -9,7 +9,7 @@ const routes = [
         path: "home",
         component: () => import("pages/IndexPage.vue"),
         meta: {
-          title: 'Zybizo - Inicio'
+          title: 'Galaxia Glamour Store - Inicio'
         }
       },
       {

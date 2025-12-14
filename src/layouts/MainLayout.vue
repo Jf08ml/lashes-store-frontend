@@ -276,12 +276,12 @@ const linksList = [
     icon: "bi-cart-check",
     link: "/catalogo",
   },
-  {
-    title: "Sorteo de descuentos",
-    caption: "",
-    icon: "bi-gift-fill",
-    link: "/sorteozybizo",
-  },
+  // {
+  //   title: "Sorteo de descuentos",
+  //   caption: "",
+  //   icon: "bi-gift-fill",
+  //   link: "/sorteozybizo",
+  // },
   {
     title: "Stock de productos",
     caption: "",
@@ -324,29 +324,29 @@ const linksList = [
     link: "/categories",
     role: "Administrator",
   },
-  {
-    title: "Facebook",
-    caption: "/zybizo.bazar",
-    icon: "bi-facebook",
-    link: "https://www.facebook.com/zybizo.bazar",
-  },
+  // {
+  //   title: "Facebook",
+  //   caption: "/zybizo.bazar",
+  //   icon: "bi-facebook",
+  //   link: "https://www.facebook.com/zybizo.bazar",
+  // },
   {
     title: "Instagram",
-    caption: "@zybizobazar",
+    caption: "@galaxia.glamourr",
     icon: "bi-instagram",
-    link: "https://www.instagram.com/zybizobazar",
+    link: "https://www.instagram.com/galaxia.glamourr",
   },
   {
     title: "Whatsapp",
-    caption: "@ZybizoBazar",
+    caption: "@GalaxiaGlamourStore",
     icon: "bi-whatsapp",
-    link: "https://wa.me/message/LRMCRWYN6JRNO1",
+    link: "https://wa.me/573184345284",
   },
   {
-    title: "Zybizo page",
-    caption: "Page official",
+    title: "Galaxia Glamour",
+    caption: "Página official",
     icon: "bi-globe-americas",
-    link: "https://www.zybizobazar.com/catalogo",
+    link: "https://www.galaxiaglamour.com",
   },
 ];
 
